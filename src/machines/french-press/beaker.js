@@ -3,7 +3,6 @@ import { Machine, assign, sendParent } from 'xstate';
 const hasMaxWater = (context, event) => context.water >= 350
 const hasMaxScoops = (context, event) => context.scoops >= 2
 const notEmpty = (context, event) => context.water > 0 || context.scoops > 0
-const hasBeenStirred = (context, event) => context.hasBeenStirred
 
 const addWater = assign({
     water: (context, event) => context.water + 50
@@ -13,16 +12,11 @@ const addScoop = assign({
     scoops: (context, event) => context.scoops + 1
 })
 
-const stir = assign({
-    hasBeenStirred: true
-})
-
 export default Machine({
     id: 'beaker',
     context: {
         water: 0,
-        scoops: 0,
-        hasBeenStirred: false
+        scoops: 0
     },
     initial: 'enabled',
     states: {
@@ -93,24 +87,22 @@ export default Machine({
                 },
                 unstirred: {
                     on: {
-                        '': {
-                            target: 'stirred',
-                            cond: 'hasBeenStirred'
-                        },
-                        STIR: {
-                            target: 'stirred',
-                            actions: [stir]
-                        }
+                        STIR: 'stirred'
                     }
                 },
+                
                 stirred: {
                     entry: sendParent('BEAKER_STIRRED')
-                }
+                },
+                stirHistory: {
+                    type: 'history',
+                    default: 'empty'
+                },
             }
         },
         disabled: {
             on: {
-                ENABLE: 'enabled'
+                ENABLE: 'enabled.stirHistory'
             }
         }
     }
@@ -118,12 +110,10 @@ export default Machine({
         guards: {
             hasMaxWater,
             hasMaxScoops,
-            notEmpty,
-            hasBeenStirred
+            notEmpty
         },
         actions: {
             addWater,
-            addScoop,
-            stir
+            addScoop
         }
     })

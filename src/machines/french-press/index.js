@@ -20,14 +20,24 @@ export default Machine({
             }),
             on: {
                 ATTACH_PRESS: {
-                    actions: [send('DISABLE', {
-                        to: context => context.beaker
-                    })]
+                    actions: [
+                        send('DISABLE', {
+                            to: context => context.beaker
+                        }),
+                        send('DISABLE_REPOSITION', {
+                            to: context => context.press
+                        })
+                     ]
                 },
                 DETACH_PRESS: {
-                    actions: [send('ENABLE', {
-                        to: context => context.beaker
-                    })]
+                    actions: [
+                        send('ENABLE', {
+                            to: context => context.beaker
+                        }),
+                        send('ENABLE_REPOSITION', {
+                            to: context => context.press
+                        })
+                    ]
                 }
             }
         },

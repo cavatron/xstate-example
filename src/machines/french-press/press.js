@@ -5,26 +5,40 @@ export default Machine({
     type: 'parallel',
     states: {
         position: {
-            initial: 'lowered',
+            initial: 'enabled',
             states: {
-                raised: {
+                disabled: {
                     on: {
-                        LOWER_PRESS: {
-                            target: 'lowered',
-                            actions: [sendParent('LOWER_PRESS')]
-                        },
-                        
+                        ENABLE_REPOSITION: 'enabled'
                     }
                 },
-                lowered: {
+                enabled: {
                     on: {
-                        RAISE_PRESS: {
-                            target: 'raised',
-                            actions: [sendParent('RAISE_PRESS')]
-                        },
+                        DISABLE_REPOSITION: 'disabled'
+                    },
+                    initial: 'raised',
+                states: {
+                    raised: {
+                        on: {
+                            LOWER_PRESS: {
+                                target: 'lowered',
+                                actions: [sendParent('LOWER_PRESS')]
+                            },
+                            
+                        }
+                    },
+                    lowered: {
+                        on: {
+                            RAISE_PRESS: {
+                                target: 'raised',
+                                actions: [sendParent('RAISE_PRESS')]
+                            },
+                        }
                     }
                 }
+                }
             }
+          
         },
         beaker: {
             initial: 'detached',
