@@ -9,14 +9,14 @@ export default function({ actorRef }) {
   return (
     <>
     <div>Water: {water}, Scoops: {scoops}</div>
-    {state.matches('unstirred') && <div>Unstirred</div>}
-    {state.matches('stirred') && <div>Stirred</div>}
-    
-    <button disabled={state.matches('filling.water.full') || state.matches('unstirred') || state.matches('stirred')} onClick={() => send('ADD_WATER')}>Add water</button>
+    {state.matches('enabled.unstirred') && <div>Unstirred</div>}
+    {state.matches('enabled.stirred') && <div>Stirred</div>}
 
-          <button disabled={state.matches('filling.scoop.full') || state.matches('unstirred') || state.matches('stirred')} onClick={() => send('ADD_SCOOP')}>Add scoop</button>
+    <button disabled={state.matches('enabled.filling.water.full') || state.matches('enabled.unstirred') || state.matches('enabled.stirred') || state.matches('disabled')} onClick={() => send('ADD_WATER')}>Add water</button>
 
-          <button disabled={state.matches('empty') || state.matches('stirred') || state.matches('filling.water.filling') || state.matches('filling.scoop.filling')} onClick={() => send('STIR')}>Stir</button>
+          <button disabled={state.matches('enabled.filling.scoop.full') || state.matches('enabled.unstirred') || state.matches('enabled.stirred') || state.matches('disabled')} onClick={() => send('ADD_SCOOP')}>Add scoop</button>
+
+          <button disabled={state.matches('enabled.empty') || state.matches('enabled.stirred') || state.matches('enabled.filling.water.filling') || state.matches('disabled') || state.matches('enabled.filling.scoop.filling')} onClick={() => send('STIR')}>Stir</button>
           </>
   );
 }

@@ -1,4 +1,4 @@
-import { Machine } from 'xstate';
+import { Machine, sendParent } from 'xstate';
 
 export default Machine({
     id: 'press',
@@ -9,12 +9,19 @@ export default Machine({
             states: {
                 raised: {
                     on: {
-                        LOWER_PRESS: 'lowered'
+                        LOWER_PRESS: {
+                            target: 'lowered',
+                            actions: [sendParent('LOWER_PRESS')]
+                        },
+                        
                     }
                 },
                 lowered: {
                     on: {
-                        RAISE_PRESS: 'raised',
+                        RAISE_PRESS: {
+                            target: 'raised',
+                            actions: [sendParent('RAISE_PRESS')]
+                        },
                     }
                 }
             }
@@ -24,12 +31,18 @@ export default Machine({
             states: {
                 attached: {
                     on: {
-                        DETACH_PRESS: 'detached'
+                        DETACH_PRESS: {
+                            target: 'detached',
+                            actions: [sendParent('DETACH_PRESS')]
+                        }
                     }
                 },
                 detached: {
                     on: {
-                        ATTACH_PRESS: 'attached'
+                        ATTACH_PRESS: {
+                            target: 'attached',
+                            actions: [sendParent('ATTACH_PRESS')]
+                        }
                     }
                 }
             }

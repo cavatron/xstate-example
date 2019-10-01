@@ -18,7 +18,18 @@ export default Machine({
                 spout: () => spawn(spoutMachine),
                 press: () => spawn(pressMachine)
             }),
-            onDone: 'cooking'
+            on: {
+                ATTACH_PRESS: {
+                    actions: [send('DISABLE', {
+                        to: context => context.beaker
+                    })]
+                },
+                DETACH_PRESS: {
+                    actions: [send('ENABLE', {
+                        to: context => context.beaker
+                    })]
+                }
+            }
         },
         cooking: {
             after: {
