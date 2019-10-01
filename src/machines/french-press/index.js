@@ -1,4 +1,4 @@
-import { Machine, send } from 'xstate';
+import { Machine, send, spawn, assign } from 'xstate';
 import pressMachine from './press';
 import spoutMachine from './spout';
 import beakerMachine from './beaker';
@@ -6,12 +6,19 @@ import beakerMachine from './beaker';
 export default Machine({
     id: 'frenchPress',
     initial: 'preparing',
+    context: {
+        beaker: null,
+        spout: null,
+        press: null
+    },
     states: {
         preparing: {
-            invoke: {
-                src: beakerMachine,
-                onDone: 'cooking'
-            },
+            entry: assign({
+                beaker: () => spawn(beakerMachine),
+                spout: () => spawn(spoutMachine),
+                press: () => spawn(pressMachine)
+            }),
+            onDone: 'cooking'
         },
         cooking: {
             after: {
