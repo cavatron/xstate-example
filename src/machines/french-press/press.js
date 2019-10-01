@@ -5,37 +5,35 @@ export default Machine({
     type: 'parallel',
     states: {
         position: {
-            initial: 'enabled',
+            initial: 'raised',
             states: {
-                disabled: {
+                raised: {
                     on: {
-                        ENABLE_REPOSITION: 'enabled'
+                        LOWER_PRESS: {
+                            target: 'lowered',
+                            actions: [sendParent('PRESS_LOWERED')]
+                        },
+                        RAISE_PRESS: {
+                            target: 'raised',
+                            actions: [
+                                sendParent('PRESS_RAISED')
+                            ]
+                        }
                     }
                 },
-                enabled: {
+                lowered: {
                     on: {
-                        DISABLE_REPOSITION: 'disabled'
-                    },
-                    initial: 'raised',
-                states: {
-                    raised: {
-                        on: {
-                            LOWER_PRESS: {
-                                target: 'lowered',
-                                actions: [sendParent('LOWER_PRESS')]
-                            },
-                            
-                        }
-                    },
-                    lowered: {
-                        on: {
-                            RAISE_PRESS: {
-                                target: 'raised',
-                                actions: [sendParent('RAISE_PRESS')]
-                            },
+                        RAISE_PRESS: {
+                            target: 'raised',
+                            actions: [sendParent('PRESS_RAISED')]
+                        },
+                        LOWER_PRESS: {
+                            target: 'lowered',
+                            actions: [
+                                sendParent('PRESS_LOWERED')
+                            ]
                         }
                     }
-                }
                 }
             }
           
@@ -47,19 +45,28 @@ export default Machine({
                     on: {
                         DETACH_PRESS: {
                             target: 'detached',
-                            actions: [sendParent('DETACH_PRESS')]
-                        }
+                            actions: [sendParent('PRESS_DETACHED')]
+                        },
+                        ATTACH_PRESS: {
+                            target: 'attached',
+                            actions: [sendParent('PRESS_ATTACHED')]
+                        },
                     }
                 },
                 detached: {
                     on: {
                         ATTACH_PRESS: {
                             target: 'attached',
-                            actions: [sendParent('ATTACH_PRESS')]
+                            actions: [sendParent('PRESS_ATTACHED')]
+                        },
+                        DETACH_PRESS: {
+                            target: 'detached',
+                            actions: [sendParent('PRESS_DETACHED')]
                         }
                     }
                 }
             }
+            
         }
     }
 })

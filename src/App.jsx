@@ -9,19 +9,31 @@ import { useMachine } from '@xstate/react';
 export default function() {
   const [state, send] = useMachine(frenchPressMachine);
 
-  const { beaker, press, spout } = state.context;
+  const { beaker, spout, press } = state.context;
 
   return (
            <div className="App">
          <header className="App-header">
-    <Beaker actorRef={beaker} />
-    <Press actorRef={press} />
-    <Spout actorRef={spout} />
 
-           <button disabled={!state.matches('ready')} onClick={() => send('POUR')}>Pour</button>
-           {state.matches('cooking') && <div>Cooking</div>}
-           {state.matches('ready') && <div>Done</div>}
-           {state.matches('served') && <div>Served</div>}
+           <Press actorRef={press} />
+           <Spout actorRef={spout} />
+           
+          {state.matches('start') && <button onClick={() => send('START')}>Start</button>}
+
+           {state.matches('raisePress') && <div>Raising press</div>}
+           {state.matches('detachPress') && <div>Detaching press</div>}
+           {state.matches('beaker') && <Beaker actorRef={beaker} />}
+          
+           {state.matches('attachPress') && <div>Attaching press</div>}
+           {state.matches('closeSpout') && <div>Closing spout</div>}
+           {state.matches('wait') && <div>Waiting</div>}
+           {state.matches('lowerPress') && <div>Lowering press</div>}
+           {state.matches('openSpout') && <div>Opening spout</div>}
+           {state.matches('ready') && <>
+            <div>Ready</div>
+            <button onClick={() => send('POUR')}>Pour</button>
+           </>}
+           {state.matches('served') && <div>Served. Enjoy!</div>}
     </header>
       </div>
   );

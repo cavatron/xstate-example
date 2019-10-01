@@ -9,8 +9,7 @@ export default function({ actorRef }) {
         {state.matches('open') && <div>Spout open</div>}
         {state.matches('closed') && <div>Spout closed</div>}
 
-         <button disabled={state.matches('open')} onClick={() => send('OPEN')}>Open spout</button>
-         <button disabled={state.matches('closed')} onClick={() => send('CLOSE')}>Close spout</button>
+
           </>
   );
 }

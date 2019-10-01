@@ -1,4 +1,4 @@
-import { Machine } from 'xstate';
+import { Machine, sendParent } from 'xstate';
 
 export default Machine({
     id: 'spout',
@@ -6,12 +6,34 @@ export default Machine({
     states: {
         open: {
             on: {
-                CLOSE: 'closed'
+                OPEN: {
+                    target: 'open',
+                    actions: [
+                        sendParent('SPOUT_OPENED')
+                    ]
+                },
+                CLOSE: {
+                    target: 'closed',
+                    actions: [
+                        sendParent('SPOUT_CLOSED')
+                    ]
+                }
             }
         },
         closed: {
             on: {
-                OPEN: 'open'
+                OPEN: {
+                    target: 'open',
+                    actions: [
+                        sendParent('SPOUT_OPENED')
+                    ]
+                },
+                CLOSE: {
+                    target: 'closed',
+                    actions: [
+                        sendParent('SPOUT_CLOSED')
+                    ]
+                }
             }
         }
     }

@@ -18,92 +18,74 @@ export default Machine({
         water: 0,
         scoops: 0
     },
-    initial: 'enabled',
+    initial: 'empty',
     states: {
-        enabled: {
+        empty: {
             on: {
-                DISABLE: 'disabled'
-            },
-            initial: 'empty',
-            states: {
-                empty: {
-                    on: {
-                        '': {
-                            target: 'filling',
-                            cond: 'notEmpty'
-                        },
-                        ADD_WATER: {
-                            target: 'filling.water',
-                            actions: 'addWater'
-                        },
-                        ADD_SCOOP: {
-                            target: 'filling.scoop',
-                            actions: 'addScoop'
-                        }
-                    }
+                '': {
+                    target: 'filling',
+                    cond: 'notEmpty'
                 },
-                filling: {
-                    type: 'parallel',
-                    states: {
-                        water: {
-                            initial: 'filling',
-                            states: {
-                                filling: {
-                                    on: {
-                                        '': {
-                                            target: 'full',
-                                            cond: 'hasMaxWater'
-                                        },
-                                        ADD_WATER: {
-                                            target: 'filling',
-                                            actions: 'addWater'
-                                        }
-                                    }
-                                },
-                                full: { type: 'final' }
-                            }
-        
-                        },
-                        scoop: {
-                            initial: 'filling',
-                            states: {
-                                filling: {
-                                    on: {
-                                        '': {
-                                            target: 'full',
-                                            cond: 'hasMaxScoops'
-                                        },
-                                        ADD_SCOOP: {
-                                            target: 'filling',
-                                            actions: 'addScoop'
-                                        }
-                                    }
-                                },
-                                full: { type: 'final' }
-                            }
-                        }
-                    },
-                    onDone: 'unstirred'
+                ADD_WATER: {
+                    target: 'filling.water',
+                    actions: 'addWater'
                 },
-                unstirred: {
-                    on: {
-                        STIR: 'stirred'
-                    }
-                },
-                
-                stirred: {
-                    entry: sendParent('BEAKER_STIRRED')
-                },
-                stirHistory: {
-                    type: 'history',
-                    default: 'empty'
-                },
+                ADD_SCOOP: {
+                    target: 'filling.scoop',
+                    actions: 'addScoop'
+                }
             }
         },
-        disabled: {
+        filling: {
+            type: 'parallel',
+            states: {
+                water: {
+                    initial: 'filling',
+                    states: {
+                        filling: {
+                            on: {
+                                '': {
+                                    target: 'full',
+                                    cond: 'hasMaxWater'
+                                },
+                                ADD_WATER: {
+                                    target: 'filling',
+                                    actions: 'addWater'
+                                }
+                            }
+                        },
+                        full: { type: 'final', entry: sendParent('MAX_WATER') }
+                    }
+
+                },
+                scoop: {
+                    initial: 'filling',
+                    states: {
+                        filling: {
+                            on: {
+                                '': {
+                                    target: 'full',
+                                    cond: 'hasMaxScoops'
+                                },
+                                ADD_SCOOP: {
+                                    target: 'filling',
+                                    actions: 'addScoop'
+                                }
+                            }
+                        },
+                        full: { type: 'final', entry: sendParent('MAX_COFFEE') }
+                    }
+                }
+            },
+            onDone: 'unstirred'
+        },
+        unstirred: {
             on: {
-                ENABLE: 'enabled.stirHistory'
+                STIR: 'stirred'
             }
+        },
+        stirred: {
+            entry: sendParent('BEAKER_STIRRED')
         }
     }
 }, {
