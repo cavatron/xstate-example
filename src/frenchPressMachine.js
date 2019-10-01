@@ -8,17 +8,9 @@ const addWater = assign({
     water: (context, event) => context.water + 50
 });
 
-
 const addScoop = assign({
     scoops: (context, event) => context.scoops + 1
 })
-
-const emptyBeaker = assign({
-    water: 0,
-    scoops: 0
-})
-
-
 
 const pressStates = {
     type: 'parallel',
@@ -53,7 +45,7 @@ const pressStates = {
 
                 },
                 detached: {
-        
+
                 }
             }
         },
@@ -69,81 +61,87 @@ const pressStates = {
     }
 }
 
-const beakerStates = {
-    initial: 'empty',
-    states: {
-        empty: {
-            on: {
-                ADD_WATER: {
-                    target: 'filling',
-                    actions: 'addWater'
-                },
-                ADD_SCOOP: {
-                    target: 'filling',
-                    actions: 'addScoop'
-                }
-            }
-        },
-        filling: {
-            on: {
-                '': [
-                    {
-                        target: 'full',
-                        cond: 'hasMaxWater'
-                    },
-                    {
-                        target: 'full',
-                        cond: 'hasMaxScoops'
-                    }
-                ],
-                ADD_WATER: {
-                    target: 'filling',
-                    actions: 'addWater'
-                },
-                ADD_SCOOP: {
-                    target: 'filling',
-                    actions: 'addScoop'
-                }
-            }
-        },
-        full: {
-            type: 'parallel',
-
-            on: {
-                RESET: {
-                    target: 'empty',
-                    actions: 'emptyBeaker'
-                }
-            },
-
-            initial: 'unstirred',
-            states: {
-                stirred: {
-
-                },
-                unstirred: {
-
-                }
-            }
-        }
-    }
-}
-
 const frenchPressMachine = Machine({
     id: 'frenchPress',
     context: {
         water: 0,
         scoops: 0
     },
-    initial: 'unprepared',
+    // initial: 'unprepared',
+    // states: {
+    //     unprepared: {},
+    //     prepared: {
+    //         type: 'final'
+    //     }
+    // }
+    initial: 'empty',
     states: {
-        unprepared: {},
-        prepared: {
-            type: 'final'
-        }
+        empty: {
+            on: {
+                ADD_WATER: {
+                    target: 'filling.water',
+                    actions: 'addWater'
+                },
+                ADD_SCOOP: {
+                    target: 'filling.scoop',
+                    actions: 'addScoop'
+                }
+            }
+        },
+        filling: {
+            type: 'parallel',
+            states: {
+                water: {
+                    initial: 'filling',
+                    states: {
+                        filling: {
+                            on: {
+                                '': {
+                                    target: 'full',
+                                    cond: 'hasMaxWater'
+                                },
+                                ADD_WATER: {
+                                    target: 'filling',
+                                    actions: 'addWater'
+                                }
+                            }
+                        },
+                        full: { type: 'final' }
+                    }
+
+                },
+                scoop: {
+                    initial: 'filling',
+                    states: {
+                        filling: {
+                            on: {
+                                '': {
+                                    target: 'full',
+                                    cond: 'hasMaxScoops'
+                                },
+                                ADD_SCOOP: {
+                                    target: 'filling',
+                                    actions: 'addScoop'
+                                }
+                            }
+                        },
+                        full: { type: 'final' }
+                    }
+                }
+            },
+            onDone: 'full'
+        },
+        full: {}
     }
 }, {
-    guards: {
-        isBeakerFull
-    }
-})
+        guards: {
+            hasMaxWater,
+            hasMaxScoops
+        },
+        actions: {
+            addWater,
+            addScoop
+        }
+    })
+
+export default frenchPressMachine;
