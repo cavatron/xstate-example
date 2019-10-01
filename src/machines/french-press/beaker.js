@@ -1,5 +1,4 @@
-import { Machine, assign } from 'xstate';
-
+import { Machine, assign, sendParent } from 'xstate';
 
 const hasMaxWater = (context, event) => context.water >= 350
 const hasMaxScoops = (context, event) => context.scoops >= 2
@@ -12,68 +11,12 @@ const addScoop = assign({
     scoops: (context, event) => context.scoops + 1
 })
 
-const pressStates = {
-    type: 'parallel',
-    states: {
-        mesh: {
-            initial: 'lowered',
-            lowered: {
-                on: {
-                    get LOWER_PRESS() {
-                        return frenchPressMachine.states.lowered
-                    },
-                    get RAISE_PRESS() {
-                        return frenchPressMachine.states.raised
-                    }
-                }
-            },
-            raised: {
-                on: {
-                    get LOWER_PRESS() {
-                        return frenchPressMachine.states.lowered
-                    },
-                    get RAISE_PRESS() {
-                        return frenchPressMachine.states.raised
-                    }
-                }
-            },
-        },
-        body: {
-            initial: 'detached',
-            states: {
-                attached: {
-
-                },
-                detached: {
-
-                }
-            }
-        },
-        spout: {
-            initial: 'closed',
-            open: {
-
-            },
-            closed: {
-
-            }
-        }
-    }
-}
-
-const frenchPressMachine = Machine({
-    id: 'frenchPress',
+export default Machine({
+    id: 'beaker',
     context: {
         water: 0,
         scoops: 0
     },
-    // initial: 'unprepared',
-    // states: {
-    //     unprepared: {},
-    //     prepared: {
-    //         type: 'final'
-    //     }
-    // }
     initial: 'empty',
     states: {
         empty: {
@@ -129,9 +72,16 @@ const frenchPressMachine = Machine({
                     }
                 }
             },
-            onDone: 'full'
+            onDone: 'unstirred'
         },
-        full: {}
+        unstirred: {
+            on: {
+                STIR: 'stirred'
+            }
+        },
+        stirred: {
+            type: 'final'
+        }
     }
 }, {
         guards: {
@@ -143,5 +93,3 @@ const frenchPressMachine = Machine({
             addScoop
         }
     })
-
-export default frenchPressMachine;
