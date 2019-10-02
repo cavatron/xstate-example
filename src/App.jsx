@@ -13,8 +13,9 @@ export default function () {
   return (
     <div className="container">
       <div className="row text-center align-items-center">
-        <div className="col">
+        <div className="col-md-4">
           <Press actorRef={press} />
+          <Spout actorRef={spout} />
         </div>
         <div className="col">
 
@@ -35,9 +36,7 @@ export default function () {
           </>}
           {state.matches('served') && <div>Served. Enjoy!</div>}
         </div>
-        <div className="col">
-          <Spout actorRef={spout} />
-        </div>
+      
 
 
 
