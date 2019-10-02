@@ -5,6 +5,8 @@ import Press from './Press.jsx';
 import frenchPressMachine from './machines/french-press';
 import { useMachine } from '@xstate/react';
 
+import { Spinner } from 'reactstrap';
+
 export default function () {
   const [state, send] = useMachine(frenchPressMachine);
 
@@ -27,7 +29,12 @@ export default function () {
 
           {state.matches('attachPress') && <div>Attaching press</div>}
           {state.matches('closeSpout') && <div>Closing spout</div>}
-          {state.matches('wait') && <div>Waiting</div>}
+          {state.matches('wait') &&
+            <>
+              <Spinner />
+              <div>Waiting</div>
+            </>
+          }
           {state.matches('lowerPress') && <div>Lowering press</div>}
           {state.matches('openSpout') && <div>Opening spout</div>}
           {state.matches('ready') && <>
@@ -36,7 +43,7 @@ export default function () {
           </>}
           {state.matches('served') && <div>Served. Enjoy!</div>}
         </div>
-      
+
 
 
 
