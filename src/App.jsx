@@ -5,7 +5,7 @@ import Press from './Press.jsx';
 import frenchPressMachine from './machines/french-press';
 import { useMachine } from '@xstate/react';
 
-import { Spinner } from 'reactstrap';
+import { Spinner, Button } from 'reactstrap';
 
 export default function () {
   const [state, send] = useMachine(frenchPressMachine);
@@ -21,7 +21,7 @@ export default function () {
         </div>
         <div className="col">
 
-          {state.matches('start') && <button onClick={() => send('START')}>Start</button>}
+          {state.matches('start') && <Button onClick={() => send('START')}>Start</Button>}
 
           {state.matches('raisePress') && <div>Raising press</div>}
           {state.matches('detachPress') && <div>Detaching press</div>}
@@ -39,7 +39,7 @@ export default function () {
           {state.matches('openSpout') && <div>Opening spout</div>}
           {state.matches('ready') && <>
             <div>Ready</div>
-            <button onClick={() => send('POUR')}>Pour</button>
+            <Button onClick={() => send('POUR')}>Pour</Button>
           </>}
           {state.matches('served') && <div>Served. Enjoy!</div>}
         </div>
