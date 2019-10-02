@@ -2,7 +2,7 @@ import { Machine, sendParent } from 'xstate';
 
 export default Machine({
     id: 'spout',
-    initial: 'closed',
+    initial: 'open',
     states: {
         open: {
             on: {

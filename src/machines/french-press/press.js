@@ -5,7 +5,7 @@ export default Machine({
     type: 'parallel',
     states: {
         position: {
-            initial: 'raised',
+            initial: 'lowered',
             states: {
                 raised: {
                     on: {
@@ -36,10 +36,10 @@ export default Machine({
                     }
                 }
             }
-          
+
         },
         beaker: {
-            initial: 'detached',
+            initial: 'attached',
             states: {
                 attached: {
                     on: {
@@ -66,7 +66,7 @@ export default Machine({
                     }
                 }
             }
-            
+
         }
     }
 })
